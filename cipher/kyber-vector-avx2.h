@@ -1,4 +1,4 @@
-/* Experiment for AVX2 */
+/* Glue code for vector AVX2 implementation */
 #include <immintrin.h>
 #define ALIGNED_UINT8(N)        \
     union {                     \

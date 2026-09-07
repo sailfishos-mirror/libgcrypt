@@ -3979,16 +3979,11 @@ if test "$found" = "1" ; then
                           kyber.lo"
    AC_DEFINE(USE_KYBER, 1, [Defined if this module should be included])
 
-   case "${host}" in
-      x86_64-*-*)
-         # Build with the assembly implementation
-         AC_DEFINE(KYBER_VECTOR_IMPLEMENTATION, 1, [Defined with vector implementation])
-         VECTOR_CFLAGS="-mavx2 -mbmi2 -mpopcnt"
-         AC_SUBST(VECTOR_CFLAGS)
-      ;;
-      *)
-      ;;
-   esac
+   if test x"$avx2support" = xyes ; then
+      # Build with the AVX2 implementation
+      AC_DEFINE(KYBER_VECTOR_AVX2_IMPLEMENTATION, 1, [Defined with vector implementation with AVX2 instructions])
+      AM_CONDITIONAL(ENABLE_AVX2_EXTRA_CFLAGS, test "$avx2support" = "yes")
+   fi
 fi
 
 LIST_MEMBER(dilithium, $enabled_pubkey_ciphers)

@@ -341,8 +341,8 @@ int16_t ct_int16_select (int16_t v0, int16_t v1, unsigned long op_enable);
  * Elements of R_q = Z_q[X]/(X^n + 1). Represents polynomial
  * coeffs[0] + X*coeffs[1] + X^2*coeffs[2] + ... + X^{n-1}*coeffs[n-1]
  */
-#ifdef KYBER_VECTOR_IMPLEMENTATION
-#include "kyber-vector.h"
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+#include "kyber-vector-avx2.h"
 #else
 typedef struct{
   int16_t coeffs[KYBER_N];
@@ -381,7 +381,7 @@ static void poly_add(poly *r, const poly *a, const poly *b);
 static void poly_sub(poly *r, const poly *a, const poly *b);
 
 /*************** kyber/ref/ntt.h */
-#ifndef KYBER_VECTOR_IMPLEMENTATION
+#ifndef KYBER_VECTOR_AVX2_IMPLEMENTATION
 static const int16_t zetas[128];
 
 static void ntt(int16_t poly[256]);
@@ -392,7 +392,7 @@ static void basemul(int16_t r[2], const int16_t a[2], const int16_t b[2], int16_
 #endif
 
 /*************** kyber/ref/reduce.h */
-#ifndef KYBER_VECTOR_IMPLEMENTATION
+#ifndef KYBER_VECTOR_AVX2_IMPLEMENTATION
 #define MONT -1044 /* 2^16 mod q */
 #define QINV -3327 /* q^-1 mod 2^16 */
 

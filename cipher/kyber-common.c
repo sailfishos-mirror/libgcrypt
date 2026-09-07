@@ -78,13 +78,13 @@ typedef struct{
 } polyvec_4;
 #endif
 
-#ifdef KYBER_VECTOR_IMPLEMENTATION
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
 static unsigned int rej_uniform(int16_t *r,
                                 unsigned int len,
                                 const uint8_t *buf,
                                 unsigned int buflen);
 
-#include "kyber-common-vector.c"
+#include "kyber-common-vector-avx2.c"
 #else
 /*************** kyber/ref/cbd.c */
 /*************************************************

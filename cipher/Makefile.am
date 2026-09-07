@@ -27,7 +27,7 @@ AM_CFLAGS = $(GPG_ERROR_CFLAGS)
 AM_CCASFLAGS = $(NOEXECSTACK_FLAGS)
 
 EXTRA_DIST = gost-s-box.c kyber-common.c kyber-kdep.c \
-             kyber-common-vector.c kyber-vector.h \
+             kyber-common-vector-avx2.c kyber-vector-avx2.h \
              dilithium-common.c dilithium-dep.c
 
 CLEANFILES = gost-s-box$(EXEEXT_FOR_BUILD)
@@ -425,9 +425,14 @@ sha512-riscv-zvknhb-zvkb.o: $(srcdir)/sha512-riscv-zvknhb-zvkb.c Makefile
 sha512-riscv-zvknhb-zvkb.lo: $(srcdir)/sha512-riscv-zvknhb-zvkb.c Makefile
 	`echo $(LTCOMPILE) $(riscv_vector_crypto_sha_cflags) -c $< | $(instrumentation_munging) `
 
-# We may need to add other option
-kyber.o: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-common-vector.c Makefile
-	`echo $(COMPILE) @VECTOR_CFLAGS@ -c $< | $(instrumentation_munging) `
+if ENABLE_AVX2_EXTRA_CFLAGS
+kyber_vector_avx2_cflags = -O2 -mavx2 -mbmi2 -mpopcnt
+else
+kyber_vector_avx2_cflags =
+endif
 
-kyber.lo: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-common-vector.c Makefile
-	`echo $(LTCOMPILE) @VECTOR_CFLAGS@ -c $< | $(instrumentation_munging) `
+kyber.o: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-common-vector-avx2.c Makefile
+	`echo $(COMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `
+
+kyber.lo: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-common-vector-avx2.c Makefile
+	`echo $(LTCOMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `

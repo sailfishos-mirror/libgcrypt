@@ -1,5 +1,5 @@
-/* kyber-common-vector.c - the Kyber key encapsulation mechanism
- *                         (common vector part)
+/* kyber-common-vector-avx2.c - the Kyber key encapsulation mechanism
+ *                              (common part, vector with AVX2)
  * Copyright (C) 2026 g10 Code GmbH
  *
  * This file was modified for use by Libgcrypt.
