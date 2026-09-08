@@ -84,7 +84,7 @@ static unsigned int rej_uniform(int16_t *r,
                                 const uint8_t *buf,
                                 unsigned int buflen);
 
-#include "kyber-common-vector-avx2.c"
+#include "kyber-vector-avx2.c"
 #else
 /*************** kyber/ref/cbd.c */
 /*************************************************

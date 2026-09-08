@@ -15,7 +15,7 @@
 typedef ALIGNED_INT16(KYBER_N) poly;
 typedef ALIGNED_INT16(640) qdata_t;
 
-/* Those are internally defined by asm, but use "extern" here.  */
+/* Those are assembler implementations in kyber-vector-avx2.c.  */
 extern void ntttobytes_avx(uint8_t *r, const __m256i *a, const __m256i *qdata);
 extern void nttfrombytes_avx(__m256i *r, const uint8_t *a, const __m256i *qdata);
 extern void ntt_avx(__m256i *r, const __m256i *qdata);

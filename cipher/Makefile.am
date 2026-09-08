@@ -27,7 +27,7 @@ AM_CFLAGS = $(GPG_ERROR_CFLAGS)
 AM_CCASFLAGS = $(NOEXECSTACK_FLAGS)
 
 EXTRA_DIST = gost-s-box.c kyber-common.c kyber-kdep.c \
-             kyber-common-vector-avx2.c kyber-vector-avx2.h \
+             kyber-vector-avx2.c kyber-vector-avx2.h \
              dilithium-common.c dilithium-dep.c
 
 CLEANFILES = gost-s-box$(EXEEXT_FOR_BUILD)
@@ -431,8 +431,8 @@ else
 kyber_vector_avx2_cflags =
 endif
 
-kyber.o: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-common-vector-avx2.c Makefile
+kyber.o: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-vector-avx2.c Makefile
 	`echo $(COMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `
 
-kyber.lo: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-common-vector-avx2.c Makefile
+kyber.lo: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-vector-avx2.c Makefile
 	`echo $(LTCOMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `
