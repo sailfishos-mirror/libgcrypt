@@ -581,6 +581,8 @@ void polyvec_add(polyvec *r, const polyvec *a, const polyvec *b)
 #undef crypto_kem_enc_derand
 #undef crypto_kem_dec
 #undef polyvec
+#undef polyvec_compress
+#undef polyvec_decompress
 #undef polyvec_tobytes
 #undef polyvec_frombytes
 #undef polyvec_ntt
