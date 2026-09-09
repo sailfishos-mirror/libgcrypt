@@ -120,8 +120,8 @@ static int crypto_kem_dec_3(uint8_t *ss, const uint8_t *ct, const uint8_t *sk);
 static int crypto_kem_dec_4(uint8_t *ss, const uint8_t *ct, const uint8_t *sk);
 
 void
-kyber_keypair (int algo, uint8_t *pk, uint8_t *sk, const uint8_t *coins,
-               struct kem_genkey_extra_data_s *extra)
+kyber_keypair_avx2 (int algo, uint8_t *pk, uint8_t *sk, const uint8_t *coins,
+                    struct kem_genkey_extra_data_s *extra)
 {
   uint8_t rnd[GCRY_KEM_MLKEM_RANDOM_LEN * 2];  /* For d || z */
 
@@ -158,8 +158,8 @@ kyber_keypair (int algo, uint8_t *pk, uint8_t *sk, const uint8_t *coins,
 }
 
 void
-kyber_encap (int algo, uint8_t *ct, uint8_t *ss, const uint8_t *pk,
-             const uint8_t *coins)
+kyber_encap_avx2 (int algo, uint8_t *ct, uint8_t *ss, const uint8_t *pk,
+                  const uint8_t *coins)
 {
   uint8_t rnd[GCRY_KEM_MLKEM_RANDOM_LEN];
 
@@ -189,7 +189,7 @@ kyber_encap (int algo, uint8_t *ct, uint8_t *ss, const uint8_t *pk,
 }
 
 void
-kyber_decap (int algo, uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
+kyber_decap_avx2 (int algo, uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 {
   switch (algo)
     {
@@ -341,9 +341,7 @@ int16_t ct_int16_select (int16_t v0, int16_t v1, unsigned long op_enable);
  * Elements of R_q = Z_q[X]/(X^n + 1). Represents polynomial
  * coeffs[0] + X*coeffs[1] + X^2*coeffs[2] + ... + X^{n-1}*coeffs[n-1]
  */
-typedef struct{
-  int16_t coeffs[KYBER_N];
-} poly;
+#include "kyber-vector-avx2.h"
 
 #if !defined(KYBER_K) || KYBER_K == 2 || KYBER_K == 3
 static void poly_compress_128(uint8_t r[KYBER_POLYCOMPRESSEDBYTES_2_3], const poly *a);
@@ -376,23 +374,6 @@ static void poly_reduce(poly *r);
 static void poly_add(poly *r, const poly *a, const poly *b);
 static void poly_sub(poly *r, const poly *a, const poly *b);
 
-/*************** kyber/ref/ntt.h */
-static const int16_t zetas[128];
-
-static void ntt(int16_t poly[256]);
-
-static void invntt(int16_t poly[256]);
-
-static void basemul(int16_t r[2], const int16_t a[2], const int16_t b[2], int16_t zeta);
-
-/*************** kyber/ref/reduce.h */
-#define MONT -1044 /* 2^16 mod q */
-#define QINV -3327 /* q^-1 mod 2^16 */
-
-static int16_t montgomery_reduce(int32_t a);
-
-static int16_t barrett_reduce(int16_t a);
-
 /*************** kyber/ref/symmetric.h */
 typedef keccak_state xof_state;
 
@@ -423,7 +404,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 				(void *)(INPUT), (size_t)KYBER_CIPHERTEXTBYTES, \
 				NULL, (size_t)0)
 
-#include "kyber-common.c"
+#include "kyber-common-vector-avx2.c"
 
 #define VARIANT2(name) name ## _2
 #define VARIANT3(name) name ## _3
@@ -463,7 +444,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 #  define poly_getnoise_eta1 poly_getnoise_eta1_3_4
 #  define gen_matrix VARIANT4(gen_matrix)
 # endif
-# include "kyber-kdep.c"
+# include "kyber-kdep-vector-avx2.c"
 # else
 # define KYBER_K 2
 # define KYBER_POLYCOMPRESSEDBYTES    128
@@ -494,7 +475,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT2(indcpa_keypair_derand)
 # define indcpa_enc VARIANT2(indcpa_enc)
 # define indcpa_dec VARIANT2(indcpa_dec)
-# include "kyber-kdep.c"
+# include "kyber-kdep-vector-avx2.c"
 
 # define KYBER_K 3
 # define KYBER_POLYCOMPRESSEDBYTES    128
@@ -525,7 +506,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT3(indcpa_keypair_derand)
 # define indcpa_enc VARIANT3(indcpa_enc)
 # define indcpa_dec VARIANT3(indcpa_dec)
-# include "kyber-kdep.c"
+# include "kyber-kdep-vector-avx2.c"
 
 # define KYBER_K 4
 # define KYBER_POLYCOMPRESSEDBYTES    160
@@ -556,5 +537,5 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT4(indcpa_keypair_derand)
 # define indcpa_enc VARIANT4(indcpa_enc)
 # define indcpa_dec VARIANT4(indcpa_dec)
-# include "kyber-kdep.c"
+# include "kyber-kdep-vextor-avx2.c"
 #endif

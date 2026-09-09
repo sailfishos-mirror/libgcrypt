@@ -1,6 +1,5 @@
-/* kyber-vector-avx2.c - the Kyber key encapsulation mechanism
- *                       (vector optimization with AVX2)
- * Copyright (C) 2026 g10 Code GmbH
+/* kyber-common.c - the Kyber key encapsulation mechanism (common part)
+ * Copyright (C) 2024 g10 Code GmbH
  *
  * This file was modified for use by Libgcrypt.
  *
@@ -51,12 +50,75 @@
  *
  * - C++ style comments are changed to C-style.
  *
+ * - Functions "poly_cbd_eta1" "poly_cbd_eta2" are removed.
+ *
+ * - "poly_compress" and "poly_decompress" are now two variants _128
+ *   and _160.
+ *
+ * - "poly_getnoise_eta1" is now two variants _2 and _3_4.
+ *
+ * - "poly_getnoise_eta2" directly uses "cbd2" function.
+ *
  * - Assembler implementation (*.S files) are converted to asm statements.
  *
  * - poly_ntt calls reduce_avx (so that we can share indcpa_keypair_derand).
  */
+
 #include <stdint.h>
 #include <immintrin.h>
+
+#if !defined(KYBER_K) || KYBER_K == 2
+typedef struct{
+  poly vec[2];
+} polyvec_2;
+#endif
+#if !defined(KYBER_K) || KYBER_K == 3
+typedef struct{
+  poly vec[3];
+} polyvec_3;
+#endif
+#if !defined(KYBER_K) || KYBER_K == 4
+typedef struct{
+  poly vec[4];
+} polyvec_4;
+#endif
+
+/*************** kyber/ref/indcpa.c */
+/*************************************************
+* Name:        rej_uniform
+*
+* Description: Run rejection sampling on uniform random bytes to generate
+*              uniform random integers mod q
+*
+* Arguments:   - int16_t *r: pointer to output buffer
+*              - unsigned int len: requested number of 16-bit integers (uniform mod q)
+*              - const uint8_t *buf: pointer to input buffer (assumed to be uniformly random bytes)
+*              - unsigned int buflen: length of input buffer in bytes
+*
+* Returns number of sampled 16-bit integers (at most len)
+**************************************************/
+static unsigned int rej_uniform(int16_t *r,
+                                unsigned int len,
+                                const uint8_t *buf,
+                                unsigned int buflen)
+{
+  unsigned int ctr, pos;
+  uint16_t val0, val1;
+
+  ctr = pos = 0;
+  while(ctr < len && pos + 3 <= buflen) {
+    val0 = ((buf[pos+0] >> 0) | ((uint16_t)buf[pos+1] << 8)) & 0xFFF;
+    val1 = ((buf[pos+1] >> 4) | ((uint16_t)buf[pos+2] << 4)) & 0xFFF;
+    pos += 3;
+
+    if(val0 < KYBER_Q)
+      r[ctr++] = val0;
+    if(ctr < len && val1 < KYBER_Q)
+      r[ctr++] = val1;
+  }
+
+  return ctr;
+}
 
 /*************** kyber/avx2/consts.c */
 #define Q KYBER_Q

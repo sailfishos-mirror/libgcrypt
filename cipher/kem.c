@@ -132,7 +132,15 @@ _gcry_kem_genkey (int algo,
           || pubkey_len != GCRY_KEM_MLKEM512_PUBKEY_LEN
           || (optional && optional_len != GCRY_KEM_MLKEM_RANDOM_LEN*2))
         return GPG_ERR_INV_ARG;
-      kyber_keypair (algo, pubkey, seckey, optional, extra);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_keypair_avx2 (algo, pubkey, seckey, optional, extra);
+        else
+#endif
+          kyber_keypair (algo, pubkey, seckey, optional, extra);
+      }
       _gcry_burn_stack (KYBER_KEYPAIR_STACK_BURN (algo));
       return 0;
 
@@ -141,7 +149,15 @@ _gcry_kem_genkey (int algo,
           || pubkey_len != GCRY_KEM_MLKEM768_PUBKEY_LEN
           || (optional && optional_len != GCRY_KEM_MLKEM_RANDOM_LEN*2))
         return GPG_ERR_INV_ARG;
-      kyber_keypair (algo, pubkey, seckey, optional, extra);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_keypair_avx2 (algo, pubkey, seckey, optional, extra);
+        else
+#endif
+          kyber_keypair (algo, pubkey, seckey, optional, extra);
+      }
       _gcry_burn_stack (KYBER_KEYPAIR_STACK_BURN (algo));
       return 0;
 
@@ -150,7 +166,15 @@ _gcry_kem_genkey (int algo,
           || pubkey_len != GCRY_KEM_MLKEM1024_PUBKEY_LEN
           || (optional && optional_len != GCRY_KEM_MLKEM_RANDOM_LEN*2))
         return GPG_ERR_INV_ARG;
-      kyber_keypair (algo, pubkey, seckey, optional, extra);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_keypair_avx2 (algo, pubkey, seckey, optional, extra);
+        else
+#endif
+          kyber_keypair (algo, pubkey, seckey, optional, extra);
+      }
       _gcry_burn_stack (KYBER_KEYPAIR_STACK_BURN (algo));
       return 0;
 #endif
@@ -215,7 +239,15 @@ _gcry_kem_encap (int algo,
         return GPG_ERR_INV_ARG;
       if (optional && optional_len != GCRY_KEM_MLKEM_RANDOM_LEN)
 	return GPG_ERR_INV_ARG;
-      kyber_encap (algo, ciphertext, shared, pubkey, optional);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_encap_avx2 (algo, ciphertext, shared, pubkey, optional);
+        else
+#endif
+          kyber_encap (algo, ciphertext, shared, pubkey, optional);
+      }
       _gcry_burn_stack (KYBER_ENCAP_STACK_BURN (algo));
       return 0;
 
@@ -226,7 +258,15 @@ _gcry_kem_encap (int algo,
         return GPG_ERR_INV_ARG;
       if (optional && optional_len != GCRY_KEM_MLKEM_RANDOM_LEN)
 	return GPG_ERR_INV_ARG;
-      kyber_encap (algo, ciphertext, shared, pubkey, optional);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_encap_avx2 (algo, ciphertext, shared, pubkey, optional);
+        else
+#endif
+          kyber_encap (algo, ciphertext, shared, pubkey, optional);
+      }
       _gcry_burn_stack (KYBER_ENCAP_STACK_BURN (algo));
       return 0;
 
@@ -320,7 +360,15 @@ _gcry_kem_decap (int algo,
         return GPG_ERR_INV_ARG;
       if (optional != NULL || optional_len != 0)
         return GPG_ERR_INV_ARG;
-      kyber_decap (algo, shared, ciphertext, seckey);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_decap_avx2 (algo, shared, ciphertext, seckey);
+        else
+#endif
+          kyber_decap (algo, shared, ciphertext, seckey);
+      }
       _gcry_burn_stack (KYBER_DECAP_STACK_BURN (algo));
       return 0;
 
@@ -331,7 +379,15 @@ _gcry_kem_decap (int algo,
         return GPG_ERR_INV_ARG;
       if (optional != NULL || optional_len != 0)
         return GPG_ERR_INV_ARG;
-      kyber_decap (algo, shared, ciphertext, seckey);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_decap_avx2 (algo, shared, ciphertext, seckey);
+        else
+#endif
+          kyber_decap (algo, shared, ciphertext, seckey);
+      }
       _gcry_burn_stack (KYBER_DECAP_STACK_BURN (algo));
       return 0;
 
@@ -342,7 +398,15 @@ _gcry_kem_decap (int algo,
         return GPG_ERR_INV_ARG;
       if (optional != NULL || optional_len != 0)
         return GPG_ERR_INV_ARG;
-      kyber_decap (algo, shared, ciphertext, seckey);
+      {
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+        unsigned int hwf = _gcry_get_hw_features ();
+        if ((hwf & HWF_INTEL_AVX2) && (hwf & HWF_INTEL_BMI2))
+          kyber_decap_avx2 (algo, shared, ciphertext, seckey);
+        else
+#endif
+          kyber_decap (algo, shared, ciphertext, seckey);
+      }
       _gcry_burn_stack (KYBER_DECAP_STACK_BURN (algo));
       return 0;
 #endif

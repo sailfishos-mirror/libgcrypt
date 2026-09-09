@@ -78,14 +78,6 @@ typedef struct{
 } polyvec_4;
 #endif
 
-#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
-static unsigned int rej_uniform(int16_t *r,
-                                unsigned int len,
-                                const uint8_t *buf,
-                                unsigned int buflen);
-
-#include "kyber-vector-avx2.c"
-#else
 /*************** kyber/ref/cbd.c */
 /*************************************************
 * Name:        load32_littleendian
@@ -933,7 +925,6 @@ void polyvec_decompress_4(polyvec_4 *r, const uint8_t a[4*352])
     }
   }
 }
-#endif
 #endif
 
 /*************** kyber/ref/indcpa.c */

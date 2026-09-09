@@ -425,14 +425,12 @@ sha512-riscv-zvknhb-zvkb.o: $(srcdir)/sha512-riscv-zvknhb-zvkb.c Makefile
 sha512-riscv-zvknhb-zvkb.lo: $(srcdir)/sha512-riscv-zvknhb-zvkb.c Makefile
 	`echo $(LTCOMPILE) $(riscv_vector_crypto_sha_cflags) -c $< | $(instrumentation_munging) `
 
-if ENABLE_AVX2_EXTRA_CFLAGS
+if ENABLE_KYBER_AVX2_EXTRA_CFLAGS
 kyber_vector_avx2_cflags = -O2 -mavx2 -mbmi2 -mpopcnt
-else
-kyber_vector_avx2_cflags =
-endif
 
-kyber.o: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-vector-avx2.c Makefile
+kyber-vector.o: $(srcdir)/kyber-vector.c Makefile
 	`echo $(COMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `
 
-kyber.lo: $(srcdir)/kyber.c $(srcdir)/kyber-common.c $(srcdir)/kyber-vector-avx2.c Makefile
+kyber-vector.lo: $(srcdir)/kyber-vector.c Makefile
 	`echo $(LTCOMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `
+endif

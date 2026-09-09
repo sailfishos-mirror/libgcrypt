@@ -3982,7 +3982,7 @@ if test "$found" = "1" ; then
    if test x"$avx2support" = xyes ; then
       # Build with the AVX2 implementation
       AC_DEFINE(KYBER_VECTOR_AVX2_IMPLEMENTATION, 1, [Defined with vector implementation with AVX2 instructions])
-      AM_CONDITIONAL(ENABLE_AVX2_EXTRA_CFLAGS, test "$avx2support" = "yes")
+      AM_CONDITIONAL(ENABLE_KYBER_AVX2_EXTRA_CFLAGS, test "$avx2support" = "yes")
    fi
 fi
 

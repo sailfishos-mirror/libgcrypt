@@ -78,6 +78,15 @@ void kyber_keypair (int algo, uint8_t *pk, uint8_t *sk, const uint8_t *coins,
 void kyber_encap (int algo, uint8_t *ct, uint8_t *ss, const uint8_t *pk,
                   const uint8_t *coins);
 void kyber_decap (int algo, uint8_t *ss, const uint8_t *ct, const uint8_t *sk);
+#ifdef KYBER_VECTOR_AVX2_IMPLEMENTATION
+void kyber_keypair_avx2 (int algo, uint8_t *pk, uint8_t *sk,
+                         const uint8_t *coins,
+                         struct kem_genkey_extra_data_s *extra);
+void kyber_encap_avx2 (int algo, uint8_t *ct, uint8_t *ss, const uint8_t *pk,
+                       const uint8_t *coins);
+void kyber_decap_avx2 (int algo, uint8_t *ss, const uint8_t *ct,
+                       const uint8_t *sk);
+#endif
 #elif defined(KYBER_K)
 int crypto_kem_keypair_derand (uint8_t *pk, uint8_t *sk, const uint8_t *coins);
 int crypto_kem_keypair (uint8_t *pk, uint8_t *sk);
