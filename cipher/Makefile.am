@@ -27,7 +27,7 @@ AM_CFLAGS = $(GPG_ERROR_CFLAGS)
 AM_CCASFLAGS = $(NOEXECSTACK_FLAGS)
 
 EXTRA_DIST = gost-s-box.c kyber-common.c kyber-kdep.c \
-             kyber-vector-avx2.c kyber-vector-avx2.h \
+             kyber-common-vector-avx2.c kyber-kdep-vector-avx2.c \
              dilithium-common.c dilithium-dep.c
 
 CLEANFILES = gost-s-box$(EXEEXT_FOR_BUILD)
@@ -159,6 +159,7 @@ EXTRA_libcipher_la_SOURCES = \
 	sm3-armv8-aarch64-ce.S \
 	keccak.c keccak_permute_32.h keccak_permute_64.h \
 	keccak-armv7-neon.S keccak-amd64-avx512.S \
+	kyber-vector-avx2.c \
 	stribog.c \
 	tiger.c \
 	whirlpool.c whirlpool-sse2-amd64.S \
@@ -428,9 +429,9 @@ sha512-riscv-zvknhb-zvkb.lo: $(srcdir)/sha512-riscv-zvknhb-zvkb.c Makefile
 if ENABLE_KYBER_AVX2_EXTRA_CFLAGS
 kyber_vector_avx2_cflags = -O2 -mavx2 -mbmi2 -mpopcnt
 
-kyber-vector.o: $(srcdir)/kyber-vector.c Makefile
+kyber-vector-avx2.o: $(srcdir)/kyber-vector-avx2.c Makefile
 	`echo $(COMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `
 
-kyber-vector.lo: $(srcdir)/kyber-vector.c Makefile
+kyber-vector-avx2.lo: $(srcdir)/kyber-vector-avx2.c Makefile
 	`echo $(LTCOMPILE) $(kyber_vector_avx2_cflags) -c $< | $(instrumentation_munging) `
 endif

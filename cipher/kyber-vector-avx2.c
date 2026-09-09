@@ -537,5 +537,5 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT4(indcpa_keypair_derand)
 # define indcpa_enc VARIANT4(indcpa_enc)
 # define indcpa_dec VARIANT4(indcpa_dec)
-# include "kyber-kdep-vextor-avx2.c"
+# include "kyber-kdep-vector-avx2.c"
 #endif

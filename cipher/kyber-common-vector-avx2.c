@@ -1507,6 +1507,7 @@ static void poly_decompress11(poly * restrict r, const uint8_t a[352+10])
 *              - polyvec *a: pointer to input vector of polynomials
 **************************************************/
 #if !defined(KYBER_K) || KYBER_K == 2
+static
 void polyvec_compress_2(uint8_t r[2*320+2], const polyvec_2 *a)
 {
   unsigned int i;
@@ -1516,6 +1517,7 @@ void polyvec_compress_2(uint8_t r[2*320+2], const polyvec_2 *a)
 }
 #endif
 #if !defined(KYBER_K) || KYBER_K == 3
+static
 void polyvec_compress_3(uint8_t r[3*320+2], const polyvec_3 *a)
 {
   unsigned int i;
@@ -1525,6 +1527,7 @@ void polyvec_compress_3(uint8_t r[3*320+2], const polyvec_3 *a)
 }
 #endif
 #if !defined(KYBER_K) || KYBER_K == 4
+static
 void polyvec_compress_4(uint8_t r[4*352+2], const polyvec_4 *a)
 {
   unsigned int i;
@@ -1545,6 +1548,7 @@ void polyvec_compress_4(uint8_t r[4*352+2], const polyvec_4 *a)
 *                                  (of length KYBER_POLYVECCOMPRESSEDBYTES)
 **************************************************/
 #if !defined(KYBER_K) || KYBER_K == 2
+static
 void polyvec_decompress_2(polyvec_2 *r, const uint8_t a[2*320+12])
 {
   unsigned int i;
@@ -1554,6 +1558,7 @@ void polyvec_decompress_2(polyvec_2 *r, const uint8_t a[2*320+12])
 }
 #endif
 #if !defined(KYBER_K) || KYBER_K == 3
+static
 void polyvec_decompress_3(polyvec_3 *r, const uint8_t a[3*320+12])
 {
   unsigned int i;
@@ -1563,6 +1568,7 @@ void polyvec_decompress_3(polyvec_3 *r, const uint8_t a[3*320+12])
 }
 #endif
 #if !defined(KYBER_K) || KYBER_K == 4
+static
 void polyvec_decompress_4(polyvec_4 *r, const uint8_t a[4*352+12])
 {
   unsigned int i;

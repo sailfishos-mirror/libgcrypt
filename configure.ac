@@ -3975,14 +3975,15 @@ fi
 LIST_MEMBER(kyber, $enabled_pubkey_ciphers)
 AM_CONDITIONAL(USE_KYBER, [test "$found" = "1"])
 if test "$found" = "1" ; then
-   GCRYPT_PUBKEY_CIPHERS="$GCRYPT_PUBKEY_CIPHERS \
-                          kyber.lo"
    AC_DEFINE(USE_KYBER, 1, [Defined if this module should be included])
 
    if test x"$avx2support" = xyes ; then
       # Build with the AVX2 implementation
       AC_DEFINE(KYBER_VECTOR_AVX2_IMPLEMENTATION, 1, [Defined with vector implementation with AVX2 instructions])
       AM_CONDITIONAL(ENABLE_KYBER_AVX2_EXTRA_CFLAGS, test "$avx2support" = "yes")
+      GCRYPT_PUBKEY_CIPHERS="$GCRYPT_PUBKEY_CIPHERS kyber.lo kyber-vector-avx2.lo"
+   else
+      GCRYPT_PUBKEY_CIPHERS="$GCRYPT_PUBKEY_CIPHERS kyber.lo"
    fi
 fi
 
