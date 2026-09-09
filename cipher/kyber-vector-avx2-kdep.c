@@ -1,5 +1,6 @@
-/* kyber-kdep.c - the Kyber key encapsulation mechanism (KYBER_K dependent part)
- * Copyright (C) 2024 g10 Code GmbH
+/* kyber-vector-avx2-kdep.c - the Kyber key encapsulation mechanism
+ *                            (KYBER_K dependent part, with AVX2 optimization)
+ * Copyright (C) 2024, 2026 g10 Code GmbH
  *
  * This file was modified for use by Libgcrypt.
  *
@@ -53,7 +54,6 @@
  * - With the change of "verify" routine (now "verify1"), no negation
  *   for the cmov argument in crypto_kem_dec.
  *
- * - Call to xof_init and xof_close are added in gen_matrix.
  */
 
 /*************** kyber/ref/polyvec.h */
@@ -70,10 +70,6 @@ static void polyvec_reduce(polyvec *r);
 static void polyvec_add(polyvec *r, const polyvec *a, const polyvec *b);
 
 /*************** kyber/ref/indcpa.h */
-#ifndef KYBER_VECTOR_AVX2_IMPLEMENTATION
-static void gen_matrix(polyvec *a, const uint8_t seed[KYBER_SYMBYTES], int transposed);
-#endif
-
 static void indcpa_keypair_derand(uint8_t pk[KYBER_INDCPA_PUBLICKEYBYTES],
                                   uint8_t sk[KYBER_INDCPA_SECRETKEYBYTES],
                                   const uint8_t coins[KYBER_SYMBYTES]);

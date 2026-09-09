@@ -1,5 +1,6 @@
-/* kyber-common.c - the Kyber key encapsulation mechanism (common part)
- * Copyright (C) 2024 g10 Code GmbH
+/* kyber-vector-avx2-common.c - the Kyber key encapsulation mechanism
+ *                              (common part, with AVX2 optimization)
+ * Copyright (C) 2024, 2026 g10 Code GmbH
  *
  * This file was modified for use by Libgcrypt.
  *
@@ -63,9 +64,6 @@
  *
  * - poly_ntt calls reduce_avx (so that we can share indcpa_keypair_derand).
  */
-
-#include <stdint.h>
-#include <immintrin.h>
 
 #if !defined(KYBER_K) || KYBER_K == 2
 typedef struct{

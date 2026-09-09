@@ -1,5 +1,6 @@
-/* kyber.c - the Kyber key encapsulation mechanism (main part)
- * Copyright (C) 2024 g10 Code GmbH
+/* kyber-vector-avx2.c - the Kyber key encapsulation mechanism
+ *                       (main part, with AVX2 optimization)
+ * Copyright (C) 2024, 2026 g10 Code GmbH
  *
  * This file was modified for use by Libgcrypt.
  *
@@ -47,8 +48,8 @@
  */
 /*
  * This implementation consists of four files: kyber.h (header),
- * kyber.c (this), kyber-common.c (common part), and kyber-kdep.c
- * (KYBER_K dependent part).
+ * kyber-vector-avx2.c (this), kyber-vector-avx2-common.c (common
+ * part), and kyber-vector-avx2-kdep.c (KYBER_K dependent part).
  *
  * It is for inclusion in libgcrypt library.  Also, standalone use of
  * the implementation is possible.  With KYBER_K defined, it can offer
@@ -341,7 +342,38 @@ int16_t ct_int16_select (int16_t v0, int16_t v1, unsigned long op_enable);
  * Elements of R_q = Z_q[X]/(X^n + 1). Represents polynomial
  * coeffs[0] + X*coeffs[1] + X^2*coeffs[2] + ... + X^{n-1}*coeffs[n-1]
  */
-#include "kyber-vector-avx2.h"
+
+/* Glue code for vector AVX2 implementation */
+#include <immintrin.h>
+#define ALIGNED_UINT8(N)        \
+    union {                     \
+        uint8_t coeffs[N];      \
+        __m256i vec[(N+31)/32]; \
+    }
+
+#define ALIGNED_INT16(N)        \
+    union {                     \
+        int16_t coeffs[N];      \
+        __m256i vec[(N+15)/16]; \
+    }
+
+typedef ALIGNED_INT16(KYBER_N) poly;
+typedef ALIGNED_INT16(640) qdata_t;
+
+/* Those are assembler implementations in kyber-vector-avx2.c.  */
+extern void ntttobytes_avx(uint8_t *r, const __m256i *a, const __m256i *qdata);
+extern void nttfrombytes_avx(__m256i *r, const uint8_t *a, const __m256i *qdata);
+extern void ntt_avx(__m256i *r, const __m256i *qdata);
+extern void invntt_avx(__m256i *r, const __m256i *qdata);
+extern void nttunpack_avx(__m256i *r, const __m256i *qdata);
+extern void basemul_avx(__m256i *r,
+          const __m256i *a,
+          const __m256i *b,
+          const __m256i *qdata);
+extern void tomont_avx(__m256i *r, const __m256i *qdata);
+extern void reduce_avx(__m256i *r, const __m256i *qdata);
+
+#define SHAKE256_RATE 136
 
 #if !defined(KYBER_K) || KYBER_K == 2 || KYBER_K == 3
 static void poly_compress_128(uint8_t r[KYBER_POLYCOMPRESSEDBYTES_2_3], const poly *a);
@@ -404,7 +436,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 				(void *)(INPUT), (size_t)KYBER_CIPHERTEXTBYTES, \
 				NULL, (size_t)0)
 
-#include "kyber-common-vector-avx2.c"
+#include "kyber-vector-avx2-common.c"
 
 #define VARIANT2(name) name ## _2
 #define VARIANT3(name) name ## _3
@@ -444,7 +476,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 #  define poly_getnoise_eta1 poly_getnoise_eta1_3_4
 #  define gen_matrix VARIANT4(gen_matrix)
 # endif
-# include "kyber-kdep-vector-avx2.c"
+# include "kyber-vector-avx2-kdep.c"
 # else
 # define KYBER_K 2
 # define KYBER_POLYCOMPRESSEDBYTES    128
@@ -475,7 +507,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT2(indcpa_keypair_derand)
 # define indcpa_enc VARIANT2(indcpa_enc)
 # define indcpa_dec VARIANT2(indcpa_dec)
-# include "kyber-kdep-vector-avx2.c"
+# include "kyber-vector-avx2-kdep.c"
 
 # define KYBER_K 3
 # define KYBER_POLYCOMPRESSEDBYTES    128
@@ -506,7 +538,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT3(indcpa_keypair_derand)
 # define indcpa_enc VARIANT3(indcpa_enc)
 # define indcpa_dec VARIANT3(indcpa_dec)
-# include "kyber-kdep-vector-avx2.c"
+# include "kyber-vector-avx2-kdep.c"
 
 # define KYBER_K 4
 # define KYBER_POLYCOMPRESSEDBYTES    160
@@ -537,5 +569,5 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT4(indcpa_keypair_derand)
 # define indcpa_enc VARIANT4(indcpa_enc)
 # define indcpa_dec VARIANT4(indcpa_dec)
-# include "kyber-kdep-vector-avx2.c"
+# include "kyber-vector-avx2-kdep.c"
 #endif
