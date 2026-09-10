@@ -49,7 +49,7 @@
 /*
  * This implementation consists of four files: kyber.h (header),
  * kyber-vector-avx2.c (this), kyber-vector-avx2-common.c (common
- * part), and kyber-vector-avx2-kdep.c (KYBER_K dependent part).
+ * part), and kyber-kdep.c (KYBER_K dependent part).
  *
  * It is for inclusion in libgcrypt library.  Also, standalone use of
  * the implementation is possible.  With KYBER_K defined, it can offer
@@ -476,7 +476,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 #  define poly_getnoise_eta1 poly_getnoise_eta1_3_4
 #  define gen_matrix VARIANT4(gen_matrix)
 # endif
-# include "kyber-vector-avx2-kdep.c"
+# include "kyber-vector-kdep.c"
 # else
 # define KYBER_K 2
 # define KYBER_POLYCOMPRESSEDBYTES    128
@@ -507,7 +507,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT2(indcpa_keypair_derand)
 # define indcpa_enc VARIANT2(indcpa_enc)
 # define indcpa_dec VARIANT2(indcpa_dec)
-# include "kyber-vector-avx2-kdep.c"
+# include "kyber-kdep.c"
 
 # define KYBER_K 3
 # define KYBER_POLYCOMPRESSEDBYTES    128
@@ -538,7 +538,7 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT3(indcpa_keypair_derand)
 # define indcpa_enc VARIANT3(indcpa_enc)
 # define indcpa_dec VARIANT3(indcpa_dec)
-# include "kyber-vector-avx2-kdep.c"
+# include "kyber-kdep.c"
 
 # define KYBER_K 4
 # define KYBER_POLYCOMPRESSEDBYTES    160
@@ -569,5 +569,5 @@ static void kyber_shake128_absorb (keccak_state *state,
 # define indcpa_keypair_derand VARIANT4(indcpa_keypair_derand)
 # define indcpa_enc VARIANT4(indcpa_enc)
 # define indcpa_dec VARIANT4(indcpa_dec)
-# include "kyber-vector-avx2-kdep.c"
+# include "kyber-kdep.c"
 #endif

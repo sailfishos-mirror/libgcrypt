@@ -193,52 +193,6 @@ static void unpack_ciphertext(polyvec *b, poly *v, const uint8_t c[KYBER_INDCPA_
 #define gen_at(A,B) gen_matrix(A,B,1)
 
 /*************************************************
-* Name:        gen_matrix
-*
-* Description: Deterministically generate matrix A (or the transpose of A)
-*              from a seed. Entries of the matrix are polynomials that look
-*              uniformly random. Performs rejection sampling on output of
-*              a XOF
-*
-* Arguments:   - polyvec *a: pointer to ouptput matrix A
-*              - const uint8_t *seed: pointer to input seed
-*              - int transposed: boolean deciding whether A or A^T is generated
-**************************************************/
-#if (XOF_BLOCKBYTES % 3)
-#error "Implementation of gen_matrix assumes that XOF_BLOCKBYTES is a multiple of 3"
-#endif
-
-#define GEN_MATRIX_NBLOCKS ((12*KYBER_N/8*(1 << 12)/KYBER_Q + XOF_BLOCKBYTES)/XOF_BLOCKBYTES)
-void gen_matrix(polyvec *a, const uint8_t seed[KYBER_SYMBYTES], int transposed)
-{
-  unsigned int ctr, i, j;
-  unsigned int buflen;
-  uint8_t buf[GEN_MATRIX_NBLOCKS*XOF_BLOCKBYTES];
-  xof_state state;
-
-  for(i=0;i<KYBER_K;i++) {
-    for(j=0;j<KYBER_K;j++) {
-      xof_init(&state);
-      if(transposed)
-        xof_absorb(&state, seed, i, j);
-      else
-        xof_absorb(&state, seed, j, i);
-
-      xof_squeezeblocks(buf, GEN_MATRIX_NBLOCKS, &state);
-      buflen = GEN_MATRIX_NBLOCKS*XOF_BLOCKBYTES;
-      ctr = rej_uniform(a[i].vec[j].coeffs, KYBER_N, buf, buflen);
-
-      while(ctr < KYBER_N) {
-        xof_squeezeblocks(buf, 1, &state);
-        buflen = XOF_BLOCKBYTES;
-        ctr += rej_uniform(a[i].vec[j].coeffs + ctr, KYBER_N - ctr, buf, buflen);
-      }
-      xof_close (&state);
-    }
-  }
-}
-
-/*************************************************
 * Name:        indcpa_keypair_derand
 *
 * Description: Generates public and private key for the CPA-secure

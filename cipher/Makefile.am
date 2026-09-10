@@ -27,7 +27,7 @@ AM_CFLAGS = $(GPG_ERROR_CFLAGS)
 AM_CCASFLAGS = $(NOEXECSTACK_FLAGS)
 
 EXTRA_DIST = gost-s-box.c kyber-common.c kyber-kdep.c \
-             kyber-vector-avx2-common.c kyber-vector-avx2-kdep.c \
+             kyber-vector-avx2-common.c \
              dilithium-common.c dilithium-dep.c
 
 CLEANFILES = gost-s-box$(EXEEXT_FOR_BUILD)

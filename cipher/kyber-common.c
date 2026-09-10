@@ -969,3 +969,81 @@ static unsigned int rej_uniform(int16_t *r,
 
   return ctr;
 }
+
+/*************************************************
+* Name:        gen_matrix
+*
+* Description: Deterministically generate matrix A (or the transpose of A)
+*              from a seed. Entries of the matrix are polynomials that look
+*              uniformly random. Performs rejection sampling on output of
+*              a XOF
+*
+* Arguments:   - polyvec *a: pointer to ouptput matrix A
+*              - const uint8_t *seed: pointer to input seed
+*              - int transposed: boolean deciding whether A or A^T is generated
+**************************************************/
+#if(XOF_BLOCKBYTES % 3)
+#error "Implementation of gen_matrix assumes that XOF_BLOCKBYTES is a multiple of 3"
+#endif
+
+#define GEN_MATRIX_NBLOCKS ((12*KYBER_N/8*(1 << 12)/KYBER_Q + XOF_BLOCKBYTES)/XOF_BLOCKBYTES)
+
+static void gen_matrix_one(int16_t *coeffs, unsigned int i, unsigned int j,
+                           const uint8_t seed[KYBER_SYMBYTES], int transposed)
+{
+  unsigned int ctr;
+  uint8_t buf[GEN_MATRIX_NBLOCKS*XOF_BLOCKBYTES];
+  xof_state state;
+
+  xof_init(&state);
+  if(transposed)
+    xof_absorb(&state, seed, i, j);
+  else
+    xof_absorb(&state, seed, j, i);
+
+  xof_squeezeblocks(buf, GEN_MATRIX_NBLOCKS, &state);
+  ctr = rej_uniform(coeffs, KYBER_N, buf,
+                    GEN_MATRIX_NBLOCKS*XOF_BLOCKBYTES);
+
+  while(ctr < KYBER_N) {
+    xof_squeezeblocks(buf, 1, &state);
+    ctr += rej_uniform(coeffs + ctr, KYBER_N - ctr, buf, XOF_BLOCKBYTES);
+  }
+  xof_close (&state);
+}
+
+static
+void gen_matrix_2(polyvec_2 *a, const uint8_t seed[KYBER_SYMBYTES], int transposed)
+{
+  unsigned int i, j;
+
+  for(i=0;i<2;i++) {
+    for(j=0;j<2;j++) {
+      gen_matrix_one (a[i].vec[j].coeffs, i, j, seed, transposed);
+    }
+  }
+}
+
+static
+void gen_matrix_3(polyvec_3 *a, const uint8_t seed[KYBER_SYMBYTES], int transposed)
+{
+  unsigned int i, j;
+
+  for(i=0;i<3;i++) {
+    for(j=0;j<3;j++) {
+      gen_matrix_one (a[i].vec[j].coeffs, i, j, seed, transposed);
+    }
+  }
+}
+
+static
+void gen_matrix_4(polyvec_4 *a, const uint8_t seed[KYBER_SYMBYTES], int transposed)
+{
+  unsigned int i, j;
+
+  for(i=0;i<4;i++) {
+    for(j=0;j<4;j++) {
+      gen_matrix_one (a[i].vec[j].coeffs, i, j, seed, transposed);
+    }
+  }
+}
