@@ -59,7 +59,7 @@ AC_INIT([mym4_package],[mym4_version],[https://bugs.gnupg.org])
 #   (No interfaces changed:                   REVISION++)
 LIBGCRYPT_LT_CURRENT=28
 LIBGCRYPT_LT_AGE=8
-LIBGCRYPT_LT_REVISION=8
+LIBGCRYPT_LT_REVISION=9
 ################################################
 
 AC_SUBST(LIBGCRYPT_LT_CURRENT)

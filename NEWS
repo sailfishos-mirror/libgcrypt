@@ -1,10 +1,23 @@
-Noteworthy changes in version 1.12.4 (unreleased)  [C28/A8/R_]
+Noteworthy changes in version 1.12.4 (2026-09-11)  [C28/A8/R9]
 -------------------------------------------------
 
  * Bug fixes:
 
+   * Fix build problem with some compiler versions related to SM4
+     instructions.  [rCf0bc379e0f]
 
- Release-info: https://dev.gnupg.org/T8414
+   * Fix padding in cSHAKE found by NIST ACVP conformance vectors.
+     [rCf54ce47180]
+
+   * Fix RSA PSS handling of huge salt lengths.  [T8377]
+
+   * Validate the length of hashed input for RSA PSS.  [T8391]
+
+   * Improve RSA OAEP decoder correctnes by validating an all-zero
+     padding.  [T8390]
+
+
+ Release-info: https://dev.gnupg.org/T8417
 
 
 Noteworthy changes in version 1.12.3 (2026-08-26)  [C28/A8/R8]
